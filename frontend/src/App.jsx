@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Landing from './pages/Landing';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import Profile from './pages/Profile';
 import SeekerDashboard from './pages/SeekerDashboard';
 import BusinessDashboard from './pages/BusinessDashboard';
 import Chat from './pages/Chat';
@@ -36,7 +37,9 @@ function App() {
           <Route path="/business" element={<BusinessDashboard />} />
         </Route>
 
+        {/* Shared Protected Routes (Both Roles) */}
         <Route element={<ProtectedRoute />}>
+          <Route path="/profile" element={<Profile />} />
           <Route path="/chat" element={<Chat />} />
         </Route>
 

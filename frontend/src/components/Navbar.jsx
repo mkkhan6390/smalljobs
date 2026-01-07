@@ -31,6 +31,7 @@ const Navbar = () => {
                     <div className="flex items-center gap-4">
                         {user ? (
                             <>
+                                <Link to="/profile" className="text-sm font-bold text-gray-700 hover:text-indigo-600 transition">Profile</Link>
                                 <Link
                                     to={user.role === 'BUSINESS' ? '/business' : '/seeker'}
                                     className="text-sm font-bold text-gray-700 hover:text-indigo-600 transition"

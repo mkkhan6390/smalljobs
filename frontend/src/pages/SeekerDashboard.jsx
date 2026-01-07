@@ -117,7 +117,7 @@ const SeekerDashboard = () => {
         const allSkills = [...selectedCommon, ...otherSkills];
 
         try {
-            await api.put('profile/', {
+            await api.patch('profile/', {
                 ...profile,
                 skills: allSkills
             });
@@ -329,9 +329,20 @@ const SeekerDashboard = () => {
                                                 </div>
                                                 <div className="mt-3 flex flex-wrap gap-2 items-center">
                                                     <span className="text-[10px] bg-gray-50 text-gray-500 px-2 py-1 rounded-lg font-bold border border-gray-100 uppercase tracking-tight">📍 {job.location}</span>
-                                                    {job.required_skills.map(skill => (
-                                                        <span key={skill} className="text-[10px] bg-indigo-600 text-white px-2 py-1 rounded-lg font-bold shadow-sm uppercase tracking-tight">{skill}</span>
-                                                    ))}
+                                                    {job.required_skills.map(skill => {
+                                                        const isMatched = profile.skills.includes(skill);
+                                                        return (
+                                                            <span
+                                                                key={skill}
+                                                                className={`text-[10px] px-2 py-1 rounded-lg font-bold shadow-sm uppercase tracking-tight ${isMatched
+                                                                    ? 'bg-emerald-600 text-white border border-emerald-500'
+                                                                    : 'bg-indigo-600 text-white'
+                                                                    }`}
+                                                            >
+                                                                {isMatched ? '✓ ' : ''}{skill}
+                                                            </span>
+                                                        );
+                                                    })}
                                                 </div>
 
                                                 {/* Job Requirements Detail */}
@@ -406,8 +417,8 @@ const SeekerDashboard = () => {
                                                     <div className="text-right">
                                                         <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Status</p>
                                                         <span className={`text-[10px] font-black px-2 py-0.5 rounded-lg uppercase border transition-colors ${app.status === 'ACCEPTED' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                                                                app.status === 'REJECTED' ? 'bg-red-50 text-red-600 border-red-100' :
-                                                                    'bg-indigo-50 text-indigo-600 border-indigo-100'
+                                                            app.status === 'REJECTED' ? 'bg-red-50 text-red-600 border-red-100' :
+                                                                'bg-indigo-50 text-indigo-600 border-indigo-100'
                                                             }`}>
                                                             {app.status}
                                                         </span>

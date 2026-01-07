@@ -75,6 +75,18 @@ const Signup = () => {
                         />
                     </div>
                     <div>
+                        <label className="block text-sm font-medium text-white mb-1">Phone Number</label>
+                        <input
+                            type="tel"
+                            name="phone_number"
+                            value={formData.phone_number}
+                            onChange={handleChange}
+                            className="w-full px-4 py-3 rounded-xl bg-white/20 border border-white/10 text-white placeholder-gray-200 focus:outline-none focus:ring-2 focus:ring-white/50"
+                            placeholder="+91 98765 43210"
+                            required
+                        />
+                    </div>
+                    <div>
                         <label className="block text-sm font-medium text-white mb-1">Password</label>
                         <input
                             type="password"

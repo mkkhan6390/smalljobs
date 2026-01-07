@@ -25,6 +25,7 @@ class UserProfile(models.Model):
     is_available = models.BooleanField(default=True)
     min_pay = models.PositiveIntegerField(null=True, blank=True)
     max_pay = models.PositiveIntegerField(null=True, blank=True)
+    bio = models.TextField(blank=True, null=True)
     
     def __str__(self):
         return f"Profile for {self.user.username}"

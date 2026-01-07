@@ -25,7 +25,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['id', 'user', 'skills', 'availability', 'location', 'phone_number', 'locations', 'latitude', 'longitude', 'is_available', 'min_pay', 'max_pay']
+        fields = ['id', 'user', 'skills', 'availability', 'location', 'phone_number', 'locations', 'latitude', 'longitude', 'is_available', 'min_pay', 'max_pay', 'bio']
         read_only_fields = ['user']
 
 class JobPostSerializer(serializers.ModelSerializer):
