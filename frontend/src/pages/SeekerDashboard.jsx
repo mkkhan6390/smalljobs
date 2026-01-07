@@ -329,6 +329,9 @@ const SeekerDashboard = () => {
                                                 </div>
                                                 <div className="mt-3 flex flex-wrap gap-2 items-center">
                                                     <span className="text-[10px] bg-gray-50 text-gray-500 px-2 py-1 rounded-lg font-bold border border-gray-100 uppercase tracking-tight">📍 {job.location}</span>
+                                                    {job.address && (
+                                                        <span className="text-[10px] bg-gray-50 text-gray-400 px-2 py-1 rounded-lg font-bold border border-gray-100 italic">🏠 {job.address}</span>
+                                                    )}
                                                     {job.required_skills.map(skill => {
                                                         const isMatched = profile.skills.includes(skill);
                                                         return (
@@ -411,6 +414,9 @@ const SeekerDashboard = () => {
                                                         <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">{app.job_details.business}</span>
                                                         <span className="text-xs text-gray-200">•</span>
                                                         <span className="text-xs text-indigo-600 font-bold uppercase">₹{app.job_details.pay_per_day}/Day</span>
+                                                        {app.job_details.address && (
+                                                            <span className="text-[10px] text-gray-400 italic"> • {app.job_details.address}</span>
+                                                        )}
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-4">

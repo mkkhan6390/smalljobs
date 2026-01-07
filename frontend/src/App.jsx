@@ -9,6 +9,8 @@ import Contact from './pages/Contact';
 import Profile from './pages/Profile';
 import SeekerDashboard from './pages/SeekerDashboard';
 import BusinessDashboard from './pages/BusinessDashboard';
+import ForgotCredentials from './pages/ForgotCredentials';
+import ResetPassword from './pages/ResetPassword';
 import Chat from './pages/Chat';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -22,6 +24,8 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-credentials" element={<ForgotCredentials />} />
+        <Route path="/reset-password/:uid/:token" element={<ResetPassword />} />
 
         {/* Protected Redirect Root (Handles dashboard routing) */}
         <Route element={<ProtectedRoute />}>

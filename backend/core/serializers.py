@@ -38,7 +38,7 @@ class JobPostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = JobPost
-        fields = ['id', 'business', 'title', 'description', 'required_skills', 'location', 'latitude', 'longitude', 'requirements', 'pay_per_day', 'created_at', 'is_active']
+        fields = ['id', 'business', 'title', 'description', 'required_skills', 'location', 'latitude', 'longitude', 'address', 'requirements', 'pay_per_day', 'created_at', 'is_active']
         read_only_fields = ['business']
 
 class MatchSerializer(serializers.ModelSerializer):

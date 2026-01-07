@@ -42,6 +42,7 @@ class JobPost(models.Model):
     # Storing requirements as JSON: { "months": [], "days": [], "timings": "" }
     requirements = models.JSONField(default=dict, blank=True)
     pay_per_day = models.PositiveIntegerField(null=True, blank=True)
+    address = models.TextField(blank=True, null=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)

@@ -36,7 +36,13 @@ const Login = () => {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-white mb-2">Password</label>
+                        <div className="flex justify-between items-center mb-2">
+                            <label className="block text-sm font-medium text-white">Password</label>
+                            <Link to="/forgot-credentials" title="Recover your username or password" className="text-[10px] font-black uppercase text-white/60 hover:text-white transition group flex items-center gap-1">
+                                <span>Forgot Creds?</span>
+                                <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+                            </Link>
+                        </div>
                         <input
                             type="password"
                             value={password}

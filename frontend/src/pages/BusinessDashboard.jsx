@@ -25,6 +25,7 @@ const BusinessDashboard = () => {
         location: '',
         latitude: null,
         longitude: null,
+        address: '',
         required_skills: '',
         pay_per_day: '',
         requirements: { months: [], days: [], time_slots: [] }
@@ -353,6 +354,17 @@ const BusinessDashboard = () => {
 
                                     <div className="space-y-6">
                                         <div>
+                                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Exact Business Address</label>
+                                            <textarea
+                                                className="w-full bg-gray-50 border border-gray-100 p-4 rounded-2xl focus:ring-2 focus:ring-indigo-100 outline-none font-medium text-gray-600 resize-none"
+                                                rows="3"
+                                                placeholder="e.g. Shop No. 5, Silver Square, Mall Road, New York"
+                                                value={newJob.address}
+                                                onChange={(e) => setNewJob({ ...newJob, address: e.target.value })}
+                                                required
+                                            />
+                                        </div>
+                                        <div>
                                             <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Precise Location (Map)</label>
                                             <div className="bg-gray-50 rounded-2xl border border-gray-100 p-2">
                                                 <LocationSelector
@@ -425,6 +437,11 @@ const BusinessDashboard = () => {
                                                     <span className="text-xs bg-indigo-50 text-indigo-700 font-black px-2 py-1 rounded-lg">📍 {job.location}</span>
                                                     <span className="text-xs text-emerald-600 font-black italic">₹{job.pay_per_day}/Day</span>
                                                 </div>
+                                                {job.address && (
+                                                    <p className="mt-2 text-[10px] text-gray-500 font-bold bg-gray-50 inline-block px-2 py-1 rounded-lg border border-gray-100 italic">
+                                                        🏠 {job.address}
+                                                    </p>
+                                                )}
                                             </div>
                                             <div className="flex gap-2">
                                                 {job.is_active ? (
