@@ -4,10 +4,11 @@ import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import AvailabilitySelector from '../components/AvailabilitySelector';
 import ProfileIcon from '../components/ProfileIcon';
-import NotificationBadge from '../components/NotificationBadge';
+import MessageBadge from '../components/NotificationBadge';
 import LocationSelector from '../components/LocationSelector';
 import PhoneModal from '../components/PhoneModal';
 import Navbar from '../components/Navbar';
+
 
 const BusinessDashboard = () => {
     const { logout } = useAuth();
@@ -119,81 +120,152 @@ const BusinessDashboard = () => {
 
     const ProfileModal = () => {
         if (!selectedProfile) return null;
-        const { user, skills, availability, location, phone_number } = selectedProfile;
 
+        const { user, skills, availability, location, phone_number } = selectedProfile;
+        const username = user.split(' ')[0];
         return (
             <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
-                <div className="bg-white rounded-[2.5rem] w-full max-w-lg p-8 shadow-2xl relative animate-in zoom-in-95 duration-200">
+                <div className="bg-white w-full max-w-lg rounded-2xl border border-gray-200 shadow-xl p-6 relative animate-in zoom-in-95 duration-200">
+
+                    {/* Close */}
                     <button
                         onClick={() => setSelectedProfile(null)}
-                        className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center bg-gray-50 rounded-full text-gray-400 hover:text-gray-900 transition"
+                        className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 text-gray-500 hover:text-gray-800 transition"
                     >
                         ✕
                     </button>
+
+                    {/* Header */}
                     <div className="flex items-center gap-4 mb-6">
-                        <div className="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center text-3xl shadow-inner">👤</div>
-                        <div>
-                            <h2 className="text-2xl font-black text-gray-900">{user}</h2>
-                            <p className="text-indigo-600 font-bold text-xs uppercase tracking-widest flex items-center gap-1">📍 {location || "Local Seekers"}</p>
+                        <div className="w-14 h-14 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-xl font-semibold">
+                            {user[0]?.toUpperCase()}
+                        </div>
+
+                        <div className="min-w-0">
+                            <h2 className="text-lg font-semibold text-gray-900 truncate">
+                                {user}
+                            </h2>
+                            <p className="text-sm text-gray-500">
+                                {location || 'Local Seeker'}
+                            </p>
                         </div>
                     </div>
 
-                    <div className="space-y-6">
-                        <div>
-                            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">Technical Skills</h3>
-                            <div className="flex flex-wrap gap-2">
-                                {skills.map(s => (
-                                    <span key={s} className="bg-gray-900 text-white px-3 py-1.5 rounded-xl text-[10px] font-black tracking-widest">{s}</span>
-                                ))}
-                                {skills.length === 0 && <span className="text-gray-400 text-sm italic">No skills listed</span>}
-                            </div>
-                        </div>
+                    {/* Skills */}
+                    <div className="mb-6">
+                        <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2">
+                            Skills
+                        </h3>
 
-                        <div>
-                            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 text-center border-b pb-2">Full Availability</h3>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                                    <span className="block font-black text-indigo-600 text-[10px] uppercase tracking-wider mb-2">Days</span>
-                                    <p className="text-xs font-bold text-gray-700">{availability?.days?.length ? availability.days.join(', ') : 'Flexible'}</p>
-                                </div>
-                                <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                                    <span className="block font-black text-indigo-600 text-[10px] uppercase tracking-wider mb-2">Months</span>
-                                    <p className="text-xs font-bold text-gray-700">{availability?.months?.length ? availability.months.join(', ') : 'All Year'}</p>
-                                </div>
-                                {availability?.time_slots?.length > 0 && (
-                                    <div className="col-span-2 bg-indigo-50/50 p-4 rounded-2xl border border-indigo-100">
-                                        <span className="block font-black text-indigo-700 text-[10px] uppercase tracking-wider mb-2 text-center">Working Hours</span>
-                                        <div className="flex flex-wrap gap-2 justify-center">
-                                            {availability.time_slots.map((slot, i) => (
-                                                <span key={i} className="bg-white px-3 py-1 rounded-lg text-xs font-black shadow-sm text-indigo-600 border border-indigo-100">{slot.start} - {slot.end}</span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="pt-4 flex gap-3">
-                            <button
-                                onClick={() => startChat(user)}
-                                className="flex-1 bg-gray-900 text-white py-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg hover:bg-gray-800 transition active:scale-95"
-                            >
-                                Send Message
-                            </button>
-                            {phone_number && (
-                                <a
-                                    href={`tel:${phone_number}`}
-                                    className="px-6 bg-emerald-600 text-white rounded-2xl flex items-center justify-center shadow-lg hover:bg-emerald-700 transition"
-                                >
-                                    📞
-                                </a>
+                        <div className="flex flex-wrap gap-2">
+                            {skills.length > 0 ? (
+                                skills.map(s => (
+                                    <span
+                                        key={s}
+                                        className="px-3 py-1 rounded-lg bg-gray-100 text-xs font-medium text-gray-700"
+                                    >
+                                        {s}
+                                    </span>
+                                ))
+                            ) : (
+                                <span className="text-sm text-gray-400 italic">
+                                    No skills listed
+                                </span>
                             )}
                         </div>
                     </div>
+
+                    {/* Availability */}
+                    <div className="mb-6">
+                        <h3 className="text-xs font-semibold text-gray-500 uppercase mb-3">
+                            Availability
+                        </h3>
+
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-gray-50 border border-gray-200 rounded-xl p-3">
+                                <p className="text-[10px] text-gray-400 uppercase mb-1">
+                                    Days
+                                </p>
+                                <p className="text-sm text-gray-700 font-medium">
+                                    {availability?.days?.length
+                                        ? availability.days.join(', ')
+                                        : 'Flexible'}
+                                </p>
+                            </div>
+
+                            <div className="bg-gray-50 border border-gray-200 rounded-xl p-3">
+                                <p className="text-[10px] text-gray-400 uppercase mb-1">
+                                    Months
+                                </p>
+                                <p className="text-sm text-gray-700 font-medium">
+                                    {availability?.months?.length
+                                        ? availability.months.join(', ')
+                                        : 'All year'}
+                                </p>
+                            </div>
+
+                            {availability?.time_slots?.length > 0 && (
+                                <div className="col-span-2 bg-indigo-50/50 border border-indigo-100 rounded-xl p-3">
+                                    <p className="text-[10px] text-indigo-600 uppercase mb-2">
+                                        Working Hours
+                                    </p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {availability.time_slots.map((slot, i) => (
+                                            <span
+                                                key={i}
+                                                className="px-3 py-1 rounded-lg bg-white border border-indigo-100 text-xs font-medium text-indigo-700"
+                                            >
+                                                {slot.start} – {slot.end}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-3 pt-2">
+                        <button
+                            onClick={() => startChat(username)}
+                            className="flex-1 bg-gray-900 text-white py-3 rounded-xl text-sm font-semibold hover:bg-gray-800 transition"
+                        >
+                            Send Message
+                        </button>
+
+                        {phone_number && (
+                            <a
+                                href={`tel:${phone_number}`}
+                                className="w-12 h-12 flex items-center justify-center rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 transition"
+                                title="Call"
+                            >
+                                <svg
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                    strokeWidth="1.8"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M2.25 6.75c0 7.59 6.16 13.75 13.75 13.75
+           .86 0 1.71-.12 2.52-.35a1.5 1.5 0 001.06-1.43v-3.02
+           a1.5 1.5 0 00-1.28-1.48l-3.28-.55a1.5 1.5 0 00-1.38.6l-1.36 1.67
+           a11.05 11.05 0 01-5.02-5.02l1.67-1.36a1.5 1.5 0 00.6-1.38l-.55-3.28
+           A1.5 1.5 0 006.25 2.25H3.78a1.5 1.5 0 00-1.53 1.5z"
+                                    />
+                                </svg>
+                            </a>
+                        )}
+
+                    </div>
+
                 </div>
             </div>
         );
     };
+
 
     const toggleCommonSkill = (skill) => {
         if (selectedCommon.includes(skill)) {
@@ -250,6 +322,7 @@ const BusinessDashboard = () => {
 
         setNewJob({
             ...repostData,
+            is_active: true,
             required_skills: others.join(', '),
             requirements: job.requirements || { months: [], days: [], time_slots: [] }
         });
@@ -263,9 +336,377 @@ const BusinessDashboard = () => {
         <div className="min-h-screen bg-gray-50 flex flex-col">
             <Navbar />
 
-            <main className="flex-1 pt-20 pb-12 px-4 sm:px-6 lg:px-8">
+            <main className="flex-1 pt-20 pb-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
                 <div className="max-w-7xl mx-auto">
-                    {/* Top Stats/Actions */}
+
+                    {/* Header */}
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-10">
+                        <div>
+                            <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">
+                                Business Dashboard
+                            </h1>
+                            <p className="text-sm text-gray-500 mt-1">
+                                Manage jobs, review applicants, and hire faster.
+                            </p>
+                        </div>
+
+                        <button
+                            onClick={() => setView('create')}
+                            className="px-6 py-3 rounded-xl bg-indigo-600 text-white text-sm font-semibold shadow hover:bg-indigo-700 transition"
+                        >
+                            + Post Job
+                        </button>
+                    </div>
+
+                    {/* Tabs */}
+                    {view !== 'create' && (
+                        <div className="inline-flex bg-gray-100 p-1 rounded-xl mb-8">
+                            {['jobs', 'history'].map(tab => (
+                                <button
+                                    key={tab}
+                                    onClick={() => setView(tab)}
+                                    className={`px-6 py-2 rounded-lg text-sm font-medium transition ${view === tab ? 'bg-white shadow text-gray-900' : 'text-gray-500 hover:text-gray-800'}`}
+                                >
+                                    {tab === 'jobs' ? 'Active Jobs' : 'Closed Jobs'}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* CREATE JOB */}
+                    {view === 'create' ? (
+                        <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-lg border border-gray-100 p-8 sm:p-10">
+
+                            <div className="flex justify-between items-center mb-8">
+                                <div>
+                                    <h2 className="text-xl font-semibold text-gray-900">
+                                        Post a New Job
+                                    </h2>
+                                    <p className="text-sm text-gray-500">
+                                        Fill details to attract the right candidates
+                                    </p>
+                                </div>
+
+                                <button
+                                    onClick={() => setView('jobs')}
+                                    className="w-9 h-9 rounded-full bg-gray-100 hover:bg-red-100 text-gray-500 hover:text-red-600 transition"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+
+                            <form onSubmit={handleCreateJob} className="space-y-10">
+
+                                {/* Job Details */}
+                                <section>
+                                    <h3 className="text-sm font-semibold text-gray-900 mb-4">
+                                        Job Details
+                                    </h3>
+
+                                    <div className="space-y-4">
+                                        <input
+                                            className="input"
+                                            placeholder="Job title (e.g. Café Waiter)"
+                                            required
+                                            value={newJob.title}
+                                            onChange={e => setNewJob({ ...newJob, title: e.target.value })}
+                                        />
+
+                                        <textarea
+                                            className="input resize-none"
+                                            rows="4"
+                                            placeholder="Describe responsibilities and expectations"
+                                            required
+                                            value={newJob.description}
+                                            onChange={e => setNewJob({ ...newJob, description: e.target.value })}
+                                        />
+                                    </div>
+                                </section>
+
+                                {/* Pay & Location */}
+                                <section>
+                                    <h3 className="text-sm font-semibold text-gray-900 mb-4">
+                                        Compensation & Location
+                                    </h3>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <input
+                                            type="number"
+                                            className="input"
+                                            placeholder="Daily Pay (₹)"
+                                            required
+                                            value={newJob.pay_per_day}
+                                            onChange={e => setNewJob({ ...newJob, pay_per_day: e.target.value })}
+                                        />
+
+                                        <input
+                                            className="input"
+                                            placeholder="City"
+                                            required
+                                            value={newJob.location}
+                                            onChange={e => setNewJob({ ...newJob, location: e.target.value })}
+                                        />
+                                    </div>
+                                </section>
+
+                                {/* Address & Map */}
+                                <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <textarea
+                                        className="input resize-none"
+                                        rows="3"
+                                        placeholder="Full business address"
+                                        required
+                                        value={newJob.address}
+                                        onChange={e => setNewJob({ ...newJob, address: e.target.value })}
+                                    />
+
+                                    <div className="bg-gray-50 border border-gray-200 rounded-xl p-2">
+                                        <LocationSelector
+                                            initialData={newJob}
+                                            onLocationChange={loc => setNewJob({ ...newJob, ...loc })}
+                                        />
+                                    </div>
+                                </section>
+
+                                {/* Skills */}
+                                <section>
+                                    <h3 className="text-sm font-semibold text-gray-900 mb-4">
+                                        Required Skills
+                                    </h3>
+
+                                    <div className="flex flex-wrap gap-2 mb-4">
+                                        {commonSkills.map(skill => (
+                                            <button
+                                                key={skill}
+                                                type="button"
+                                                onClick={() => toggleCommonSkill(skill)}
+                                                className={`px-4 py-2 rounded-lg text-xs font-medium transition
+                    ${selectedCommon.includes(skill)
+                                                        ? 'bg-indigo-600 text-white'
+                                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}
+                  `}
+                                            >
+                                                {skill}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <input
+                                        className="input"
+                                        placeholder="Other skills (comma separated)"
+                                        value={newJob.required_skills}
+                                        onChange={e => setNewJob({ ...newJob, required_skills: e.target.value })}
+                                    />
+                                </section>
+
+                                {/* Schedule */}
+                                <section>
+                                    <h3 className="text-sm font-semibold text-gray-900 mb-4">
+                                        Work Schedule
+                                    </h3>
+
+                                    <AvailabilitySelector
+                                        value={newJob.requirements}
+                                        onChange={req => setNewJob({ ...newJob, requirements: req })}
+                                    />
+                                </section>
+
+                                {/* Submit */}
+                                <button
+                                    type="submit"
+                                    className="w-full bg-gray-900 text-white py-4 rounded-2xl font-semibold tracking-wide hover:bg-gray-800 transition"
+                                >
+                                    Publish Job
+                                </button>
+                            </form>
+                        </div>
+
+                    ) : (
+
+                        /* JOB LIST */
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {filteredJobs.length === 0 ? (
+                                <div className="col-span-2 bg-white rounded-3xl p-16 text-center border border-dashed">
+                                    <p className="text-gray-500">
+                                        No jobs available in this view.
+                                    </p>
+                                </div>
+                            ) : (
+                                filteredJobs.map(job => (
+                                    <div
+                                        key={job.id}
+                                        className="bg-white rounded-2xl p-6 border border-gray-200 hover:shadow-md transition"
+                                    >
+                                        {/* Header */}
+                                        <div className="flex justify-between items-start gap-4">
+                                            <div className="min-w-0">
+                                                <h3 className="text-lg font-semibold text-gray-900 truncate">
+                                                    {job.title}
+                                                </h3>
+
+                                                <div className="flex flex-wrap items-center gap-4 mt-1 text-sm">
+                                                    <span className="flex items-center gap-1.5 text-gray-500">
+                                                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"
+                                                                d="M12 21s7-4.35 7-10A7 7 0 105 11c0 5.65 7 10 7 10z" />
+                                                            <circle cx="12" cy="11" r="2.5" />
+                                                        </svg>
+                                                        {job.location}
+                                                    </span>
+
+                                                    <span className="flex items-center gap-1.5 text-emerald-600 font-medium">
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"
+                                                                d="M8 6h8M8 10h8m-8 4h8m-6 4h6" />
+                                                        </svg>
+                                                        {job.pay_per_day}/day
+                                                    </span>
+                                                </div>
+
+                                                {job.address && (
+                                                    <p className="mt-1 text-xs text-gray-400 truncate flex items-center gap-1.5">
+                                                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"
+                                                                d="M3 21h18M6 21V7a2 2 0 012-2h8a2 2 0 012 2v14" />
+                                                        </svg>
+                                                        {job.address}
+                                                    </p>
+                                                )}
+
+                                            </div>
+
+                                            <div className="shrink-0">
+                                                {job.is_active ? (
+                                                    <button
+                                                        onClick={() => handleStatusChange(job.id, false)}
+                                                        className="px-3 py-1.5 text-xs font-medium rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition"
+                                                    >
+                                                        Deactivate
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => handleRepost(job)}
+                                                        className="px-3 py-1.5 text-xs font-medium rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition"
+                                                    >
+                                                        Repost
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Candidates */}
+                                        <div className="mt-5 border-t pt-4">
+                                            <div className="flex justify-between items-center mb-3">
+                                                <h4 className="text-xs font-semibold text-gray-500 uppercase">
+                                                    Matched Candidates
+                                                </h4>
+                                                <span className="text-xs text-indigo-600 font-medium">
+                                                    {getSuggestedCandidates(job.id).length} matches
+                                                </span>
+                                            </div>
+
+                                            <div className="flex flex-wrap gap-2">
+                                                {getSuggestedCandidates(job.id).map(match => (
+                                                    <button
+                                                        key={match.id}
+                                                        onClick={() => setSelectedProfile(match.seeker_profile)}
+                                                        className="flex items-center gap-2 px-2.5 py-1.5 bg-gray-50 rounded-xl border border-gray-200 hover:border-indigo-300 transition"
+                                                    >
+                                                        <div className="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-semibold">
+                                                            {match.seeker_username[0].toUpperCase()}
+                                                        </div>
+                                                        <div className="text-left leading-tight">
+                                                            <p className="text-xs font-medium text-gray-900">
+                                                                {match.seeker_username}
+                                                            </p>
+                                                            <p className="text-[10px] text-indigo-600">
+                                                                {(match.score * 10).toFixed(0)}% fit
+                                                            </p>
+                                                        </div>
+                                                    </button>
+                                                ))}
+
+                                                {getSuggestedCandidates(job.id).length === 0 && (
+                                                    <p className="text-xs text-gray-400 italic">
+                                                        Finding new matches…
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Applications */}
+                                        <div className="mt-5 border-t pt-4">
+                                            <h4 className="text-xs font-semibold text-gray-500 uppercase mb-3">
+                                                Recent Applicants
+                                            </h4>
+
+                                            <div className="space-y-2">
+                                                {getApplicationsForJob(job.id).map(app => (
+                                                    <div
+                                                        key={app.id}
+                                                        className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-xl border border-gray-200 hover:border-indigo-300 transition"
+                                                    >
+                                                        <div className="flex items-center gap-3 min-w-0">
+                                                            <button
+                                                                onClick={() => setSelectedProfile(app.seeker_profile)}
+                                                                className="text-sm font-medium text-gray-900 hover:text-indigo-600 truncate"
+                                                            >
+                                                                {app.seeker_username}
+                                                            </button>
+
+                                                            <span
+                                                                className={`text-[10px] px-2 py-0.5 rounded-md font-medium uppercase
+                  ${app.status === 'ACCEPTED' && 'bg-emerald-100 text-emerald-700'}
+                  ${app.status === 'REJECTED' && 'bg-red-100 text-red-700'}
+                  ${app.status === 'APPLIED' && 'bg-gray-200 text-gray-600'}
+                `}
+                                                            >
+                                                                {app.status}
+                                                            </span>
+                                                        </div>
+
+                                                        {app.status === 'APPLIED' && (
+                                                            <div className="flex gap-1.5">
+                                                                <button
+                                                                    onClick={() => handleUpdateStatus(app.id, 'ACCEPTED')}
+                                                                    className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-600 hover:bg-emerald-600 hover:text-white transition"
+                                                                >
+                                                                    ✓
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleUpdateStatus(app.id, 'REJECTED')}
+                                                                    className="w-7 h-7 rounded-full bg-red-100 text-red-600 hover:bg-red-600 hover:text-white transition"
+                                                                >
+                                                                    ✕
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+
+                                                {getApplicationsForJob(job.id).length === 0 && (
+                                                    <div className="text-center py-4 border border-dashed rounded-xl">
+                                                        <p className="text-xs text-gray-400 italic">
+                                                            No applicants yet
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+
+                            )}
+                        </div>
+                    )}
+
+                </div>
+            </main>
+
+
+            {/* <main className="flex-1 pt-20 pb-12 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto">
+                    {/* Top Stats/Actions
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                         <div>
                             <h1 className="text-3xl font-black text-gray-900 leading-tight">Business Dashboard</h1>
@@ -463,7 +904,7 @@ const BusinessDashboard = () => {
                                         </div>
 
                                         <div className="space-y-6">
-                                            {/* Candidates Matched */}
+                                            {/* Candidates Matched 
                                             <div className="bg-gray-50/80 p-6 rounded-[2rem] border border-gray-100">
                                                 <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 flex justify-between">
                                                     Candidates Matched
@@ -489,7 +930,7 @@ const BusinessDashboard = () => {
                                                 </div>
                                             </div>
 
-                                            {/* Applications */}
+                                            {/* Applications
                                             <div className="space-y-3">
                                                 <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Recent Applicants</h4>
                                                 <div className="space-y-2">
@@ -525,7 +966,7 @@ const BusinessDashboard = () => {
                         </div>
                     )}
                 </div>
-            </main>
+            </main> */}
 
             <ProfileModal />
             <PhoneModal
