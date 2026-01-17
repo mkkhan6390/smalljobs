@@ -131,8 +131,10 @@ const SeekerDashboard = () => {
     const handleApply = async (jobId) => {
         try {
             // Check if user has phone number
-            const { data: userData } = await api.get('auth/user/');
-            if (!userData.phone_number) {
+            const { data: userData } = await api.get('auth/me');
+            const { data: profile } = await api.get('profile/');
+
+            if (!profile.phone_number) {
                 setPendingJobId(jobId);
                 setIsPhoneModalOpen(true);
                 return;
@@ -148,7 +150,7 @@ const SeekerDashboard = () => {
 
     const handlePhoneSubmit = async (phone) => {
         try {
-            await api.patch('auth/user/', { phone_number: phone });
+            await api.patch('profile/', { phone_number: phone });
             setIsPhoneModalOpen(false);
             if (pendingJobId) {
                 handleApply(pendingJobId);
@@ -446,7 +448,7 @@ const SeekerDashboard = () => {
             <PhoneModal
                 isOpen={isPhoneModalOpen}
                 onClose={() => setIsPhoneModalOpen(false)}
-                onSubmit={handlePhoneSubmit}
+                onSave={handlePhoneSubmit}
             />
         </div>
     );
