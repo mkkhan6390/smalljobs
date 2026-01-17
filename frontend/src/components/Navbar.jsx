@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import MessageBadge from './NotificationBadge';
 
 const Navbar = () => {
     const { user, logout } = useAuth();
@@ -17,9 +18,9 @@ const Navbar = () => {
                     <div className="flex items-center gap-8">
                         <Link to="/" className="flex items-center gap-2 group">
                             <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center group-hover:rotate-12 transition-transform shadow-lg shadow-indigo-200">
-                                <span className="text-white font-black text-xl">S</span>
+                                <span className="text-white font-black text-xl">K</span>
                             </div>
-                            <span className="text-xl font-black text-gray-900 tracking-tight">smalljobs</span>
+                            <span className="text-xl font-black text-gray-900 tracking-tight">RozKamao</span>
                         </Link>
 
                         <div className="hidden md:flex items-center gap-6">
@@ -31,6 +32,7 @@ const Navbar = () => {
                     <div className="flex items-center gap-4">
                         {user ? (
                             <>
+                                <MessageBadge />
                                 <Link to="/profile" className="text-sm font-bold text-gray-700 hover:text-indigo-600 transition">Profile</Link>
                                 <Link
                                     to={user.role === 'BUSINESS' ? '/business' : '/seeker'}

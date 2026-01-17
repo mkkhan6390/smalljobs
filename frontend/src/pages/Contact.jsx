@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import { MapPin, Mail, ChevronDown } from "lucide-react";
 
 const Contact = () => {
     const [formData, setFormData] = useState({ name: '', email: '', type: 'Inquiry', message: '' });
@@ -27,47 +29,85 @@ const Contact = () => {
             <section className="pb-24 px-4">
                 <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
                     {/* Contact details */}
-                    <div className="space-y-8">
-                        <div className="bg-indigo-50 p-8 rounded-[2rem] border border-indigo-100">
-                            <h3 className="text-2xl font-bold text-indigo-700 mb-6 font-display">Contact Info</h3>
+                    <div className="space-y-12">
+
+                        {/* Contact Info */}
+                        <div className="bg-indigo-50/60 p-10 rounded-3xl border border-indigo-100">
+                            <h3 className="text-2xl font-semibold text-indigo-700 mb-8">
+                                Contact Information
+                            </h3>
+
                             <div className="space-y-6">
+                                {/* Address */}
                                 <div className="flex items-start gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-xl shadow-sm">📍</div>
+                                    <div className="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center">
+                                        <MapPin className="w-5 h-5 text-indigo-600" strokeWidth={1.75} />
+                                    </div>
                                     <div>
-                                        <p className="font-bold text-gray-900 uppercase text-[10px] tracking-widest">Office</p>
-                                        <p className="text-gray-600 font-medium">123 Workspace Ave, Tech City, IN</p>
+                                        <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
+                                            Office
+                                        </p>
+                                        <p className="text-gray-700 font-medium">
+                                            Kudal, Sindhudurg, Maharashtra, IN
+                                        </p>
                                     </div>
                                 </div>
+
+                                {/* Email */}
                                 <div className="flex items-start gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-xl shadow-sm">✉️</div>
+                                    <div className="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center">
+                                        <Mail className="w-5 h-5 text-indigo-600" strokeWidth={1.75} />
+                                    </div>
                                     <div>
-                                        <p className="font-bold text-gray-900 uppercase text-[10px] tracking-widest">Email</p>
-                                        <p className="text-gray-600 font-medium">support@smalljobs.com</p>
+                                        <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
+                                            Email
+                                        </p>
+                                        <p className="text-gray-700 font-medium">
+                                            support@rozkamao.com
+                                        </p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="p-8">
-                            <h4 className="text-lg font-bold text-gray-900 mb-4">Frequently Asked Questions</h4>
-                            <div className="space-y-4">
-                                <details className="group border-b border-gray-100 pb-4 cursor-pointer">
-                                    <summary className="font-bold text-gray-700 list-none flex justify-between items-center group-open:text-indigo-600">
-                                        Is Smalljobs free for workers?
-                                        <span className="text-xs transition-transform group-open:rotate-180">▼</span>
+                        {/* FAQ */}
+                        <div className="max-w-2xl">
+                            <h4 className="text-xl font-semibold text-gray-900 mb-6">
+                                Frequently Asked Questions
+                            </h4>
+
+                            <div className="space-y-5">
+                                <details className="group border-b border-gray-200 pb-4">
+                                    <summary className="flex items-center justify-between cursor-pointer list-none">
+                                        <span className="font-medium text-gray-800 group-open:text-indigo-600">
+                                            Is RozKamao free for workers?
+                                        </span>
+                                        <ChevronDown
+                                            className="w-4 h-4 text-gray-400 transition-transform duration-300 group-open:rotate-180"
+                                        />
                                     </summary>
-                                    <p className="text-sm text-gray-500 mt-2 font-medium">Yes! It is 100% free for job seekers to create a profile and apply for jobs.</p>
+                                    <p className="mt-3 text-sm text-gray-600 leading-relaxed">
+                                        Yes. It is completely free for job seekers to create a profile and apply for jobs.
+                                    </p>
                                 </details>
-                                <details className="group border-b border-gray-100 pb-4 cursor-pointer">
-                                    <summary className="font-bold text-gray-700 list-none flex justify-between items-center group-open:text-indigo-600">
-                                        How does the matching work?
-                                        <span className="text-xs transition-transform group-open:rotate-180">▼</span>
+
+                                <details className="group border-b border-gray-200 pb-4">
+                                    <summary className="flex items-center justify-between cursor-pointer list-none">
+                                        <span className="font-medium text-gray-800 group-open:text-indigo-600">
+                                            How does the matching work?
+                                        </span>
+                                        <ChevronDown
+                                            className="w-4 h-4 text-gray-400 transition-transform duration-300 group-open:rotate-180"
+                                        />
                                     </summary>
-                                    <p className="text-sm text-gray-500 mt-2 font-medium">Our system uses a hard-matching algorithm based on your exact time slots, skills, and location.</p>
+                                    <p className="mt-3 text-sm text-gray-600 leading-relaxed">
+                                        Our system uses strict matching based on your availability, skills, and nearby location.
+                                    </p>
                                 </details>
                             </div>
                         </div>
                     </div>
+
 
                     {/* Contact Form */}
                     <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 sm:p-10 shadow-xl shadow-gray-100 relative">
@@ -137,9 +177,7 @@ const Contact = () => {
                 </div>
             </section>
 
-            <footer className="py-12 border-t border-gray-100 text-center">
-                <p className="text-gray-400 text-sm font-bold uppercase tracking-widest">© 2026 Smalljobs. Always listening.</p>
-            </footer>
+            <Footer />
         </div>
     );
 };
