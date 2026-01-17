@@ -1,5 +1,29 @@
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import hero_job_platform from '../assets/smalljobshero.png';
+import { Clock, MapPin, ShieldCheck } from "lucide-react";
+import Footer from '../components/Footer'
+
+const features = [
+    {
+        title: "Smart Scheduling",
+        desc: "Our algorithm ensures you only see jobs that fit within your time slots,.",
+        icon: Clock,
+        color: "bg-orange-50 text-orange-600"
+    },
+    {
+        title: "Local Focus",
+        desc: "Find work in your own neighborhood with precise location matching.",
+        icon: MapPin,
+        color: "bg-emerald-50 text-emerald-600"
+    },
+    {
+        title: "Verified Skills",
+        desc: "Built-in skill verification helps builders and seekers connect with confidence.",
+        icon: ShieldCheck,
+        color: "bg-indigo-50 text-indigo-600"
+    }
+];
 
 const Landing = () => {
     return (
@@ -15,14 +39,14 @@ const Landing = () => {
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
                             </span>
-                            <span className="text-xs font-bold uppercase tracking-wider">New: AI-Powered Matching</span>
+                            <span className="text-xs font-bold uppercase tracking-wider">Coming Next: AI-Powered Matching</span>
                         </div>
                         <h1 className="text-5xl sm:text-7xl font-black text-gray-900 leading-tight">
-                            The Right Job. <br />
-                            <span className="text-indigo-600">The Right Time.</span>
+                            Earn More <br />
+                            <span className="text-indigo-600">With Jobs that Match your time.</span>
                         </h1>
                         <p className="text-xl text-gray-500 font-medium max-w-lg leading-relaxed">
-                            Connect with verified blue-collar opportunities that fit your exact schedule and location. No more clicking through hundreds of irrelevant posts.
+                            Connect with verified blue-collar opportunities that fit your exact schedule and location. No more confusion and No more clicking through hundreds of irrelevant posts.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 pt-4">
                             <Link to="/signup" className="px-8 py-4 bg-gray-900 text-white rounded-2xl font-bold text-center hover:bg-gray-800 transition shadow-xl shadow-gray-200">
@@ -38,16 +62,16 @@ const Landing = () => {
                                     <div key={i} className={`w-10 h-10 rounded-full border-2 border-white bg-gray-${(i + 1) * 100}`}></div>
                                 ))}
                             </div>
-                            <p className="text-sm text-gray-500 font-bold">Recommended by 1,000+ local businesses</p>
+                            <p className="text-sm text-gray-500 font-bold">Helping MSME Businesses Find the right People</p>
                         </div>
                     </div>
                     <div className="relative">
                         <div className="absolute inset-0 bg-indigo-200 rounded-full blur-3xl opacity-20 -z-10 animate-pulse"></div>
                         <img
-                            src="/hero_job_platform.png"
-                            alt="Smalljobs Platform Illustration"
-                            className="w-full h-auto drop-shadow-2xl"
-                            onError={(e) => { e.target.src = 'https://placehold.co/600x400/indigo/white?text=Smalljobs+Hero'; }}
+                            src={hero_job_platform}
+                            alt="RozKamao Platform Illustration"
+                            className="w-full h-auto drop-shadow-2xl rounded-2xl"
+                            onError={(e) => { e.target.src = 'https://placehold.co/600x400/indigo/white?text=RozKamamo+Hero'; }}
                         />
                     </div>
                 </div>
@@ -57,26 +81,32 @@ const Landing = () => {
             <section className="py-24 bg-gray-50/50 border-y border-gray-100">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-                        <h2 className="text-sm font-black text-indigo-600 uppercase tracking-widest">Why Smalljobs?</h2>
+                        <h2 className="text-sm font-black text-indigo-600 uppercase tracking-widest">Why RozKamao?</h2>
                         <h3 className="text-4xl font-bold text-gray-900">Better Matching, Better Hiring.</h3>
                         <p className="text-gray-500 font-medium">We've built the world's most intelligent scheduling engine for local work.</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {[
-                            { title: 'Smart Scheduling', desc: 'Our algorithm ensures you only see jobs that fit your exact 30-minute time slots.', icon: '⏰', color: 'bg-orange-50 text-orange-600' },
-                            { title: 'Local Focus', desc: 'Find work in your own neighborhood with precise location matching.', icon: '📍', color: 'bg-emerald-50 text-emerald-600' },
-                            { title: 'Verified Skills', desc: 'Built-in skill verification helps builders and seekers connect with confidence.', icon: '🛡️', color: 'bg-indigo-50 text-indigo-600' }
-                        ].map((feat, i) => (
-                            <div key={i} className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition duration-300">
-                                <div className={`w-12 h-12 rounded-2xl ${feat.color} flex items-center justify-center text-2xl mb-6 shadow-sm`}>
-                                    {feat.icon}
+                        {features.map((feat, i) => (
+                            <div
+                                key={i}
+                                className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition duration-300"
+                            >
+                                <div className={`w-12 h-12 rounded-2xl ${feat.color} flex items-center justify-center mb-6`}>
+                                    <feat.icon className="w-6 h-6" strokeWidth={1.75} />
                                 </div>
-                                <h4 className="text-xl font-bold text-gray-900 mb-3">{feat.title}</h4>
-                                <p className="text-gray-500 font-medium leading-relaxed">{feat.desc}</p>
+
+                                <h4 className="text-xl font-semibold text-gray-900 mb-3">
+                                    {feat.title}
+                                </h4>
+
+                                <p className="text-gray-600 leading-relaxed">
+                                    {feat.desc}
+                                </p>
                             </div>
                         ))}
                     </div>
+
                 </div>
             </section>
 
@@ -105,9 +135,7 @@ const Landing = () => {
                 </div>
             </section>
 
-            <footer className="py-12 border-t border-gray-100 text-center">
-                <p className="text-gray-400 text-sm font-bold uppercase tracking-widest">© 2026 Smalljobs. Built for the community.</p>
-            </footer>
+            <Footer />
         </div>
     );
 };
