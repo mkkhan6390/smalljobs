@@ -42,7 +42,7 @@ class LogoutView(views.APIView):
         return Response({'success': True})
 
 @method_decorator(ensure_csrf_cookie, name='dispatch')
-class UserDetailView(generics.RetrieveAPIView):
+class UserDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
