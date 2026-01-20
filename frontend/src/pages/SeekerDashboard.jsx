@@ -27,6 +27,10 @@ const SeekerDashboard = () => {
     const [commonSkills, setCommonSkills] = useState([]);
     const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
     const [pendingJobId, setPendingJobId] = useState(null);
+    const [allJobs, setAllJobs] = useState([]);
+    const [allJobsPage, setAllJobsPage] = useState(1);
+    const [hasMoreJobs, setHasMoreJobs] = useState(false);
+    const [isLoadingJobs, setIsLoadingJobs] = useState(false);
 
     const calculateJobAge = (dateString) => {
         const now = new Date();
@@ -50,12 +54,33 @@ const SeekerDashboard = () => {
         fetchMatches();
         fetchApplications();
         fetchCommonSkills();
+        fetchAllJobs(1, true);
     }, []);
+
+    const fetchAllJobs = async (page = 1, reset = false) => {
+        setIsLoadingJobs(true);
+        try {
+            const { data } = await api.get(`jobs/?page=${page}`);
+            // DRF returns { count, next, previous, results }
+            if (reset) {
+                setAllJobs(data.results);
+            } else {
+                setAllJobs(prev => [...prev, ...data.results]);
+            }
+            setHasMoreJobs(!!data.next);
+            setAllJobsPage(page);
+        } catch (e) {
+            console.error("Failed to fetch all jobs", e);
+        } finally {
+            setIsLoadingJobs(false);
+        }
+    };
 
     const fetchCommonSkills = async () => {
         try {
             const { data } = await api.get('skills/?is_common=true');
-            const names = data.map(s => s.name);
+            const results = data.results || data;
+            const names = results.map(s => s.name);
             setCommonSkills(names);
         } catch (e) {
             console.error("Failed to fetch common skills", e);
@@ -88,7 +113,9 @@ const SeekerDashboard = () => {
     const fetchMatches = async () => {
         try {
             const { data } = await api.get('matches/');
-            setMatches(data);
+            // Handle paginated or non-paginated response
+            const matchList = data.results || data;
+            setMatches(matchList);
         } catch (e) {
             console.error("Failed to fetch matches");
         }
@@ -97,7 +124,9 @@ const SeekerDashboard = () => {
     const fetchApplications = async () => {
         try {
             const { data } = await api.get('applications/');
-            setApplications(data);
+            // Handle paginated or non-paginated response
+            const appList = data.results || data;
+            setApplications(appList);
         } catch (e) {
             console.error("Failed to fetch applications");
         }
@@ -297,6 +326,12 @@ const SeekerDashboard = () => {
                             >
                                 Applied Jobs
                             </button>
+                            <button
+                                onClick={() => setActiveTab('all')}
+                                className={`px-6 py-2.5 rounded-xl text-sm font-bold transition ${activeTab === 'all' ? 'bg-gray-900 text-white shadow-lg' : 'text-gray-500 hover:text-gray-700'}`}
+                            >
+                                All Jobs
+                            </button>
                         </div>
 
                         {activeTab === 'matches' && (
@@ -401,6 +436,7 @@ const SeekerDashboard = () => {
                         )}
 
                         {activeTab === 'applied' && (
+                            // ... existing applied tab code ...
                             <div className="space-y-4">
                                 {applications.length === 0 ? (
                                     <div className="bg-white rounded-[2rem] p-12 text-center border border-gray-100">
@@ -437,6 +473,154 @@ const SeekerDashboard = () => {
                                                 </div>
                                             </div>
                                         ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {activeTab === 'all' && (
+                            <div className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {allJobs.map(job => (
+                                        <div key={job.id} className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div className="flex-1">
+                                                    <div className="flex justify-between items-start mb-1">
+                                                        <h3 className="text-lg font-black text-gray-900 leading-tight">{job.title}</h3>
+                                                        <span className="text-[10px] font-black text-gray-300 bg-gray-50 px-2 py-1 rounded-lg uppercase tracking-tight">
+                                                            {calculateJobAge(job.created_at)}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <span className="text-xs text-indigo-600 font-black uppercase tracking-widest">{job.business}</span>
+                                                        <span className="text-xs text-gray-300">•</span>
+                                                        <span className="text-xs text-emerald-600 font-black">₹{job.pay_per_day}/Day</span>
+                                                    </div>
+                                                </div>
+                                                {/* <span className="bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-xl text-[10px] font-black shrink-0 border border-indigo-100">
+                                                        {(score * 10).toFixed(0)}% MATCH
+                                                    </span> */}
+                                            </div>
+                                            <div className="mt-3 flex flex-wrap gap-2 items-center">
+                                                <span className="text-[10px] bg-gray-50 text-gray-500 px-2 py-1 rounded-lg font-bold border border-gray-100 uppercase tracking-tight">📍 {job.location}</span>
+                                                {job.address && (
+                                                    <span className="text-[10px] bg-gray-50 text-gray-400 px-2 py-1 rounded-lg font-bold border border-gray-100 italic">🏠 {job.address}</span>
+                                                )}
+                                                {job.required_skills.map(skill => {
+                                                    const isMatched = profile.skills.includes(skill);
+                                                    return (
+                                                        <span
+                                                            key={skill}
+                                                            className={`text-[10px] px-2 py-1 rounded-lg font-bold shadow-sm uppercase tracking-tight ${isMatched
+                                                                ? 'bg-emerald-600 text-white border border-emerald-500'
+                                                                : 'bg-indigo-600 text-white'
+                                                                }`}
+                                                        >
+                                                            {isMatched ? '✓ ' : ''}{skill}
+                                                        </span>
+                                                    );
+                                                })}
+                                            </div>
+
+                                            {/* Job Requirements Detail */}
+                                            <div className="mt-4 grid grid-cols-2 gap-3 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
+                                                <div className="space-y-1">
+                                                    <span className="block text-[9px] font-black text-gray-400 uppercase tracking-widest">Schedule</span>
+                                                    <p className="text-xs text-gray-700 font-black leading-tight">
+                                                        {job.requirements?.days?.length > 0 ? job.requirements.days.join(', ') : 'Any Day'}
+                                                    </p>
+                                                    <p className="text-[10px] text-gray-400 font-bold italic">
+                                                        {job.requirements?.months?.length > 0 ? job.requirements.months.join(', ') : 'All Year'}
+                                                    </p>
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <span className="block text-[9px] font-black text-gray-400 uppercase tracking-widest">Timing</span>
+                                                    {job.requirements?.time_slots?.length > 0 ? (
+                                                        <div className="flex flex-wrap gap-1">
+                                                            {job.requirements.time_slots.map((slot, i) => (
+                                                                <span key={i} className="bg-white border border-gray-100 text-[10px] px-1.5 py-0.5 rounded-lg shadow-sm text-gray-600 font-black tracking-tight">
+                                                                    {slot.start} - {slot.end}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-xs text-gray-400 italic">Open Shift</p>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <p className="mt-4 text-xs text-gray-500 font-medium leading-relaxed line-clamp-3">{job.description}</p>
+
+                                            <div className="mt-6">
+                                                {getApplicationStatus(job.id) ? (
+                                                    <div className="text-sm text-emerald-600 font-black flex items-center justify-center gap-2 bg-emerald-50 py-3 rounded-2xl border border-emerald-100 uppercase tracking-widest">
+                                                        <span className="text-lg">✓</span> Applied
+                                                    </div>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => handleApply(job.id)}
+                                                        className="w-full py-4 bg-gray-900 text-white rounded-2xl hover:bg-gray-800 transition font-black uppercase tracking-widest text-xs shadow-lg shadow-gray-200 active:scale-95"
+                                                    >
+                                                        Quick Apply
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                        // <div key={job.id} className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300">
+                                        //     <div className="flex justify-between items-start mb-4">
+                                        //         <div>
+                                        //             <h3 className="text-lg font-black text-gray-900 leading-tight mb-1">{job.title}</h3>
+                                        //             <div className="flex items-center gap-2">
+                                        //                 <span className="text-xs text-indigo-600 font-black uppercase tracking-widest">{job.business}</span>
+                                        //                 <span className="text-xs text-gray-300">•</span>
+                                        //                 <span className="text-xs text-emerald-600 font-black">₹{job.pay_per_day}/Day</span>
+                                        //             </div>
+                                        //         </div>
+                                        //         <span className="text-[10px] font-black text-gray-300 bg-gray-50 px-2 py-1 rounded-lg uppercase tracking-tight">
+                                        //             {calculateJobAge(job.created_at)}
+                                        //         </span>
+                                        //     </div>
+
+                                        //     <div className="mt-3 flex flex-wrap gap-2 items-center">
+                                        //         <span className="text-[10px] bg-gray-50 text-gray-500 px-2 py-1 rounded-lg font-bold border border-gray-100 uppercase tracking-tight">📍 {job.location}</span>
+                                        //         {job.address && <span className="text-[10px] bg-gray-50 text-gray-400 px-2 py-1 rounded-lg font-bold border border-gray-100 italic">🏠 {job.address}</span>}
+                                        //     </div>
+
+                                        //     <p className="mt-4 text-xs text-gray-500 font-medium leading-relaxed line-clamp-2">{job.description}</p>
+
+                                        //     <div className="mt-6">
+                                        //         {getApplicationStatus(job.id) ? (
+                                        //             <div className="text-sm text-emerald-600 font-black flex items-center justify-center gap-2 bg-emerald-50 py-3 rounded-2xl border border-emerald-100 uppercase tracking-widest">
+                                        //                 ✓ Applied
+                                        //             </div>
+                                        //         ) : (
+                                        //             <button
+                                        //                 onClick={() => handleApply(job.id)}
+                                        //                 className="w-full py-4 bg-gray-900 text-white rounded-2xl hover:bg-gray-800 transition font-black uppercase tracking-widest text-xs shadow-lg shadow-gray-200 active:scale-95"
+                                        //             >
+                                        //                 Quick Apply
+                                        //             </button>
+                                        //         )}
+                                        //     </div>
+                                        // </div>
+                                    ))}
+                                </div>
+
+                                {allJobs.length === 0 && !isLoadingJobs && (
+                                    <div className="bg-white rounded-[2rem] p-12 text-center border border-gray-100">
+                                        <p className="text-gray-500 font-bold">No jobs available at the moment.</p>
+                                    </div>
+                                )}
+
+                                {hasMoreJobs && (
+                                    <div className="flex justify-center mt-8">
+                                        <button
+                                            onClick={() => fetchAllJobs(allJobsPage + 1)}
+                                            disabled={isLoadingJobs}
+                                            className="px-8 py-3 bg-white border-2 border-gray-900 text-gray-900 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-gray-900 hover:text-white transition-all disabled:opacity-50"
+                                        >
+                                            {isLoadingJobs ? 'Loading...' : 'Show More Jobs'}
+                                        </button>
                                     </div>
                                 )}
                             </div>

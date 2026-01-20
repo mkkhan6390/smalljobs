@@ -54,7 +54,8 @@ const BusinessDashboard = () => {
     const fetchCommonSkills = async () => {
         try {
             const { data } = await api.get('skills/?is_common=true');
-            setCommonSkills(data.map(s => s.name));
+            const results = data.results || data;
+            setCommonSkills(results.map(s => s.name));
         } catch (e) {
             console.error("Failed to fetch common skills", e);
         }
@@ -63,7 +64,8 @@ const BusinessDashboard = () => {
     const fetchJobs = async () => {
         try {
             const { data } = await api.get('jobs/');
-            setJobs(data);
+            const results = data.results || data;
+            setJobs(results);
         } catch (e) {
             console.error(e);
         }
@@ -72,7 +74,8 @@ const BusinessDashboard = () => {
     const fetchMatches = async () => {
         try {
             const { data } = await api.get('matches/');
-            setMatches(data);
+            const results = data.results || data;
+            setMatches(results);
         } catch (e) {
             console.error(e);
         }
@@ -81,7 +84,8 @@ const BusinessDashboard = () => {
     const fetchApplications = async () => {
         try {
             const { data } = await api.get('applications/');
-            setApplications(data);
+            const results = data.results || data;
+            setApplications(results);
         } catch (e) {
             console.error("Failed to fetch applications");
         }

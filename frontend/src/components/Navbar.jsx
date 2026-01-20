@@ -40,7 +40,6 @@ const Navbar = () => {
 
                         {user ? (
                             <>
-                                <MessageBadge />
 
                                 <Link to="/profile" className="text-sm font-medium text-gray-700 hover:text-indigo-600 transition">
                                     Profile
@@ -53,6 +52,7 @@ const Navbar = () => {
                                     Dashboard
                                 </Link>
 
+                                <MessageBadge />
                                 <button
                                     onClick={handleLogout}
                                     className="bg-gray-900 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-gray-800 transition"
