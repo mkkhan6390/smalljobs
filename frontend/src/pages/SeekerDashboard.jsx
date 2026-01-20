@@ -275,7 +275,7 @@ const SeekerDashboard = () => {
                                     </div>
                                 </div>
                                 <button type="submit" className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black hover:bg-indigo-700 transition shadow-xl shadow-indigo-100 active:scale-[0.98]">
-                                    Update Profile
+                                    Find Jobs
                                 </button>
                             </form>
                         </div>
