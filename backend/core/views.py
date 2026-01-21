@@ -24,10 +24,40 @@ class JobPostViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        from django.db.models import Q
         user = self.request.user
+        queryset = JobPost.objects.all()
+
         if user.role == User.Role.BUSINESS:
-            return JobPost.objects.filter(business=user)
-        return JobPost.objects.filter(is_active=True) # Seekers see all active jobs
+            queryset = queryset.filter(business=user)
+        else:
+            queryset = queryset.filter(is_active=True)
+
+        # Filtering logic for seekers (and potentially businesses if needed)
+        search = self.request.query_params.get('search')
+        if search:
+            queryset = queryset.filter(
+                Q(title__icontains=search) | 
+                Q(description__icontains=search)
+            )
+
+        skills = self.request.query_params.get('skills')
+        if skills:
+            skill_list = [s.strip().upper() for s in skills.split(',') if s.strip()]
+            if skill_list:
+                queryset = queryset.filter(required_skills__name__in=skill_list).distinct()
+
+        # Ordering
+        ordering = self.request.query_params.get('ordering', '-created_at')
+        if ordering:
+            # Validate ordering fields to prevent errors
+            valid_fields = ['created_at', '-created_at', 'pay_per_day', '-pay_per_day', 'title', '-title']
+            if ordering in valid_fields:
+                queryset = queryset.order_by(ordering)
+            else:
+                queryset = queryset.order_by('-created_at')
+
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(business=self.request.user)

@@ -9,6 +9,8 @@ import LocationSelector from '../components/LocationSelector';
 import PhoneModal from '../components/PhoneModal';
 import Navbar from '../components/Navbar';
 
+
+
 const SeekerDashboard = () => {
     const { logout, user } = useAuth();
     const [profile, setProfile] = useState({
@@ -31,6 +33,11 @@ const SeekerDashboard = () => {
     const [allJobsPage, setAllJobsPage] = useState(1);
     const [hasMoreJobs, setHasMoreJobs] = useState(false);
     const [isLoadingJobs, setIsLoadingJobs] = useState(false);
+    const [filters, setFilters] = useState({
+        search: '',
+        skills: '',
+        ordering: '-created_at'
+    });
 
     const calculateJobAge = (dateString) => {
         const now = new Date();
@@ -54,13 +61,18 @@ const SeekerDashboard = () => {
         fetchMatches();
         fetchApplications();
         fetchCommonSkills();
-        fetchAllJobs(1, true);
     }, []);
 
-    const fetchAllJobs = async (page = 1, reset = false) => {
+    const fetchAllJobs = async (page = 1, reset = false, currentFilters = filters) => {
         setIsLoadingJobs(true);
         try {
-            const { data } = await api.get(`jobs/?page=${page}`);
+            const params = new URLSearchParams();
+            params.append('page', page);
+            if (currentFilters.search) params.append('search', currentFilters.search);
+            if (currentFilters.skills) params.append('skills', currentFilters.skills);
+            if (currentFilters.ordering) params.append('ordering', currentFilters.ordering);
+
+            const { data } = await api.get(`jobs/?${params.toString()}`);
             // DRF returns { count, next, previous, results }
             if (reset) {
                 setAllJobs(data.results);
@@ -75,6 +87,16 @@ const SeekerDashboard = () => {
             setIsLoadingJobs(false);
         }
     };
+
+    // Debounce search/filter changes
+    useEffect(() => {
+        if (activeTab === 'all') {
+            const timeout = setTimeout(() => {
+                fetchAllJobs(1, true);
+            }, 500);
+            return () => clearTimeout(timeout);
+        }
+    }, [filters.search, filters.skills, filters.ordering, activeTab]);
 
     const fetchCommonSkills = async () => {
         try {
@@ -480,6 +502,94 @@ const SeekerDashboard = () => {
 
                         {activeTab === 'all' && (
                             <div className="space-y-6">
+                                {/* Filters UI */}
+                                <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm space-y-4">
+
+                                    {/* Search + Sort */}
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+
+                                        {/* Search */}
+                                        <div className="md:col-span-2 relative">
+                                            <input
+                                                type="text"
+                                                placeholder="Search jobs by keywords"
+                                                className="w-full bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl
+                                                text-sm text-gray-900 placeholder-gray-400
+                                                focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                                                value={filters.search}
+                                                onChange={(e) =>
+                                                    setFilters(prev => ({ ...prev, search: e.target.value }))
+                                                }
+                                            />
+
+                                            {/* Search Icon */}
+                                            <svg
+                                                className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="2"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <circle cx="11" cy="11" r="7" />
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35" />
+                                            </svg>
+                                        </div>
+
+                                        {/* Sort */}
+                                        <select
+                                            className="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl
+                                            text-sm text-gray-900 cursor-pointer
+                                            focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                                            value={filters.ordering}
+                                            onChange={(e) =>
+                                                setFilters(prev => ({ ...prev, ordering: e.target.value }))
+                                            }
+                                        >
+                                            <option value="-created_at">Newest</option>
+                                            <option value="created_at">Oldest</option>
+                                            <option value="-pay_per_day">Pay ↓</option>
+                                            <option value="pay_per_day">Pay ↑</option>
+                                        </select>
+                                    </div>
+
+                                    {/* Skill Filter */}
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                                            Skills
+                                        </label>
+                                        <input
+                                            type="text"
+                                            placeholder="Waiter, Chef"
+                                            className="w-full bg-gray-50 border border-gray-200 px-4 py-2.5 rounded-xl
+                 text-sm text-gray-900 placeholder-gray-400
+                 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                                            value={filters.skills}
+                                            onChange={(e) =>
+                                                setFilters(prev => ({ ...prev, skills: e.target.value }))
+                                            }
+                                        />
+                                    </div>
+
+                                    {/* Clear Filters */}
+                                    {(filters.search || filters.skills || filters.ordering !== '-created_at') && (
+                                        <div className="pt-3 border-t border-gray-100 flex justify-end">
+                                            <button
+                                                onClick={() =>
+                                                    setFilters({
+                                                        search: '',
+                                                        skills: '',
+                                                        ordering: '-created_at'
+                                                    })
+                                                }
+                                                className="text-xs font-medium text-red-600 hover:text-red-700 transition"
+                                            >
+                                                Clear filters
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+
+
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     {allJobs.map(job => (
                                         <div key={job.id} className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
@@ -639,3 +749,4 @@ const SeekerDashboard = () => {
 };
 
 export default SeekerDashboard;
+
