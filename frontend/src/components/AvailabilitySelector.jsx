@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-
-const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+import ClockPicker from './ClockPicker';
 
 const AvailabilitySelector = ({ value, onChange }) => {
     // value structure: { days: [], months: [], time_slots: [{ start: '', end: '' }] }
@@ -44,24 +42,17 @@ const AvailabilitySelector = ({ value, onChange }) => {
         onChange({ ...data, time_slots: newSlots });
     };
 
-    // Generate 30-minute intervals for dropdown
-    const timeOptions = [];
-    for (let h = 0; h < 24; h++) {
-        for (let m = 0; m < 60; m += 30) {
-            const hour = h.toString().padStart(2, '0');
-            const minute = m.toString().padStart(2, '0');
-            timeOptions.push(`${hour}:${minute}`);
-        }
-    }
+    const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     const SelectionGroup = ({ title, items, selected, category }) => (
-        <div className="mb-4">
-            <div className="flex justify-between items-center mb-2">
-                <label className="text-sm font-bold text-gray-800 uppercase tracking-tight">{title}</label>
+        <div className="mb-6">
+            <div className="flex justify-between items-end mb-3">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{title}</label>
                 <button
                     type="button"
                     onClick={() => toggleAll(category, items)}
-                    className="text-xs text-teal-600 hover:text-teal-800 font-bold"
+                    className="text-[10px] text-indigo-600 hover:text-indigo-800 font-black uppercase tracking-widest transition-colors"
                 >
                     {items.every(item => selected.includes(item)) ? 'Deselect All' : 'Select All'}
                 </button>
@@ -72,9 +63,9 @@ const AvailabilitySelector = ({ value, onChange }) => {
                         key={item}
                         type="button"
                         onClick={() => toggleItem(category, item)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition ${selected.includes(item)
-                            ? 'bg-teal-600 text-white border-teal-600 shadow-sm'
-                            : 'bg-white text-gray-500 border-gray-200 hover:border-teal-300'
+                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 border-2 ${selected.includes(item)
+                            ? 'bg-gray-900 text-white border-gray-900 shadow-lg shadow-gray-200 scale-[1.02]'
+                            : 'bg-white text-gray-500 border-gray-100 hover:border-gray-300'
                             }`}
                     >
                         {item}
@@ -85,62 +76,69 @@ const AvailabilitySelector = ({ value, onChange }) => {
     );
 
     const TimePicker = ({ val, onTimeChange, placeholder }) => (
-        <select
-            className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none min-w-[120px] font-medium text-gray-700 shadow-sm transition-all"
+        <ClockPicker
             value={val}
-            onChange={(e) => onTimeChange(e.target.value)}
-        >
-            <option value="">{placeholder}</option>
-            {timeOptions.map(t => (
-                <option key={t} value={t}>{t}</option>
-            ))}
-        </select>
+            onChange={onTimeChange}
+            label={placeholder}
+        />
     );
 
     return (
-        <div className="space-y-6">
-            <SelectionGroup
-                title="Available Days"
-                items={DAYS}
-                selected={data.days}
-                category="days"
-            />
+        <div className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <SelectionGroup
+                    title="Days of Operation"
+                    items={DAYS}
+                    selected={data.days}
+                    category="days"
+                />
 
-            <SelectionGroup
-                title="Available Months"
-                items={MONTHS}
-                selected={data.months}
-                category="months"
-            />
+                <SelectionGroup
+                    title="Months Available"
+                    items={MONTHS}
+                    selected={data.months}
+                    category="months"
+                />
+            </div>
 
-            <div className="pt-4 border-t border-gray-100">
-                <div className="flex justify-between items-center mb-4">
-                    <label className="text-sm font-bold text-gray-800 uppercase tracking-tight">Time Slots (HH:MM)</label>
+            <div className="pt-8 border-t border-gray-100">
+                <div className="flex justify-between items-center mb-6">
+                    <div>
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] block mb-1">Time Slots</label>
+                        <p className="text-[10px] text-gray-400 font-medium">Select a start and end time for each shift.</p>
+                    </div>
                     <button
                         type="button"
                         onClick={addTimeSlot}
-                        className="text-xs bg-teal-600 text-white px-4 py-2 rounded-xl hover:bg-teal-700 font-bold transition-all shadow-md shadow-teal-500/20 flex items-center gap-1.5 active:scale-95"
+                        className="bg-gray-900 text-white px-5 py-2.5 rounded-2xl hover:bg-gray-800 font-black text-[10px] uppercase tracking-widest transition-all flex items-center gap-2 shadow-xl shadow-gray-200 active:scale-95"
                     >
-                        <span className="text-lg leading-none">+</span> Add Shift
+                        <span className="text-base leading-none">+</span> Add Shift
                     </button>
                 </div>
 
                 {data.time_slots.length === 0 ? (
-                    <div className="bg-gray-50 p-6 rounded-2xl text-center border border-dashed border-gray-200">
-                        <p className="text-sm text-gray-500 font-medium">No specific timings added.</p>
-                        <p className="text-xs text-gray-400 mt-1">Add your working hours for better matches.</p>
+                    <div className="bg-gray-50/50 p-10 rounded-[2rem] text-center border-2 border-dashed border-gray-100 group hover:border-indigo-100 transition-colors cursor-pointer" onClick={addTimeSlot}>
+                        <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 border border-gray-100 shadow-sm group-hover:scale-110 transition-transform">
+                            <span className="text-2xl text-gray-300">🕒</span>
+                        </div>
+                        <p className="text-xs text-gray-500 font-black uppercase tracking-widest">No timings set yet</p>
+                        <p className="text-[10px] text-gray-400 mt-2 font-medium">Click to add your working hours.</p>
                     </div>
                 ) : (
-                    <div className="space-y-3">
+                    <div className="grid grid-cols-1 gap-4">
                         {data.time_slots.map((slot, index) => (
-                            <div key={index} className="flex gap-4 items-center bg-gray-50/80 p-3 rounded-2xl border border-gray-100 transition-all hover:bg-white hover:shadow-sm">
-                                <div className="flex-1 flex gap-3 items-center justify-center">
+                            <div key={index} className="flex flex-col sm:flex-row gap-4 items-center bg-white p-4 rounded-[2rem] border-2 border-gray-50 shadow-sm hover:border-indigo-100 hover:shadow-md transition-all group">
+                                <div className="flex-1 flex gap-3 items-center justify-between w-full">
                                     <TimePicker
                                         val={slot.start}
                                         onTimeChange={(val) => updateTimeSlot(index, 'start', val)}
                                         placeholder="Start Time"
                                     />
-                                    <span className="text-gray-400 font-bold text-xs uppercase tracking-widest">to</span>
+                                    <div className="px-2">
+                                        <svg className="w-5 h-5 text-gray-300 group-hover:text-indigo-200 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                        </svg>
+                                    </div>
                                     <TimePicker
                                         val={slot.end}
                                         onTimeChange={(val) => updateTimeSlot(index, 'end', val)}
@@ -150,10 +148,12 @@ const AvailabilitySelector = ({ value, onChange }) => {
                                 <button
                                     type="button"
                                     onClick={() => removeTimeSlot(index)}
-                                    className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all active:scale-90"
+                                    className="w-12 h-12 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all self-end sm:self-center"
                                     title="Remove slot"
                                 >
-                                    <span className="text-2xl leading-none">×</span>
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
                                 </button>
                             </div>
                         ))}
