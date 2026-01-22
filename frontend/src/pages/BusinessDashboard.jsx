@@ -31,6 +31,7 @@ const BusinessDashboard = () => {
         pay_per_day: '',
         requirements: { months: [], days: [], time_slots: [] }
     });
+    const [editingJobId, setEditingJobId] = useState(null);
 
     const [applications, setApplications] = useState([]);
 
@@ -114,6 +115,22 @@ const BusinessDashboard = () => {
         } catch (e) {
             alert('Failed to start chat');
         }
+    };
+
+    const clearForm = () => {
+        setNewJob({
+            title: '',
+            description: '',
+            location: '',
+            latitude: null,
+            longitude: null,
+            address: '',
+            required_skills: '',
+            pay_per_day: '',
+            requirements: { months: [], days: [], time_slots: [] }
+        });
+        setSelectedCommon([]);
+        setEditingJobId(null);
     };
 
     const getSuggestedCandidates = (jobId) => {
@@ -285,16 +302,25 @@ const BusinessDashboard = () => {
         const allSkills = [...selectedCommon, ...otherSkills];
 
         try {
-            await api.post('jobs/', {
-                ...newJob,
-                required_skills: allSkills
-            });
-            alert('Job posted successfully!');
+            if (editingJobId) {
+                await api.patch(`jobs/${editingJobId}/`, {
+                    ...newJob,
+                    required_skills: allSkills
+                });
+                alert('Job updated successfully!');
+            } else {
+                await api.post('jobs/', {
+                    ...newJob,
+                    required_skills: allSkills
+                });
+                alert('Job posted successfully!');
+            }
             fetchJobs();
             fetchMatches();
             setView('jobs');
+            clearForm();
         } catch (e) {
-            alert('Failed to post job');
+            alert(editingJobId ? 'Failed to update job' : 'Failed to post job');
         }
     };
 
@@ -331,6 +357,21 @@ const BusinessDashboard = () => {
             requirements: job.requirements || { months: [], days: [], time_slots: [] }
         });
         setSelectedCommon(common);
+        setEditingJobId(null);
+        setView('create');
+    };
+
+    const handleEdit = (job) => {
+        const common = job.required_skills.filter(s => commonSkills.includes(s));
+        const others = job.required_skills.filter(s => !commonSkills.includes(s));
+
+        setNewJob({
+            ...job,
+            required_skills: others.join(', '),
+            requirements: job.requirements || { months: [], days: [], time_slots: [] }
+        });
+        setSelectedCommon(common);
+        setEditingJobId(job.id);
         setView('create');
     };
 
@@ -355,7 +396,10 @@ const BusinessDashboard = () => {
                         </div>
 
                         <button
-                            onClick={() => setView('create')}
+                            onClick={() => {
+                                clearForm();
+                                setView('create');
+                            }}
                             className="px-6 py-3 rounded-xl bg-indigo-600 text-white text-sm font-semibold shadow hover:bg-indigo-700 transition"
                         >
                             + Post Job
@@ -384,15 +428,18 @@ const BusinessDashboard = () => {
                             <div className="flex justify-between items-center mb-8">
                                 <div>
                                     <h2 className="text-xl font-semibold text-gray-900">
-                                        Post a New Job
+                                        {editingJobId ? 'Edit Job Posting' : 'Post a New Job'}
                                     </h2>
                                     <p className="text-sm text-gray-500">
-                                        Fill details to attract the right candidates
+                                        {editingJobId ? 'Update details to keep your posting accurate' : 'Fill details to attract the right candidates'}
                                     </p>
                                 </div>
 
                                 <button
-                                    onClick={() => setView('jobs')}
+                                    onClick={() => {
+                                        setView('jobs');
+                                        clearForm();
+                                    }}
                                     className="w-9 h-9 rounded-full bg-gray-100 hover:bg-red-100 text-gray-500 hover:text-red-600 transition"
                                 >
                                     ✕
@@ -402,14 +449,16 @@ const BusinessDashboard = () => {
                             <form onSubmit={handleCreateJob} className="space-y-10">
 
                                 {/* Job Details */}
-                                <section>
-                                    <h3 className="text-sm font-semibold text-gray-900 mb-4">
-                                        Job Details
+                                <section className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
+                                    <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                                        Job details
                                     </h3>
 
-                                    <div className="space-y-4">
+                                    <div className="space-y-3">
                                         <input
-                                            className="input"
+                                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm 
+                       placeholder-gray-400 focus:border-indigo-500 focus:ring-2 
+                       focus:ring-indigo-500/20 outline-none transition"
                                             placeholder="Job title (e.g. Café Waiter)"
                                             required
                                             value={newJob.title}
@@ -417,9 +466,11 @@ const BusinessDashboard = () => {
                                         />
 
                                         <textarea
-                                            className="input resize-none"
-                                            rows="4"
-                                            placeholder="Describe responsibilities and expectations"
+                                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm 
+                       placeholder-gray-400 focus:border-indigo-500 focus:ring-2 
+                       focus:ring-indigo-500/20 outline-none transition resize-none"
+                                            rows={3}
+                                            placeholder="Briefly describe responsibilities and expectations"
                                             required
                                             value={newJob.description}
                                             onChange={e => setNewJob({ ...newJob, description: e.target.value })}
@@ -427,28 +478,37 @@ const BusinessDashboard = () => {
                                     </div>
                                 </section>
 
+
                                 {/* Pay & Location */}
-                                <section>
-                                    <h3 className="text-sm font-semibold text-gray-900 mb-4">
-                                        Compensation & Location
+                                <section className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
+                                    <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                                        Compensation & location
                                     </h3>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         <input
                                             type="number"
-                                            className="input"
-                                            placeholder="Daily Pay (₹)"
+                                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm 
+                       placeholder-gray-400 focus:border-indigo-500 focus:ring-2 
+                       focus:ring-indigo-500/20 outline-none transition"
+                                            placeholder="Daily pay (₹)"
                                             required
                                             value={newJob.pay_per_day}
-                                            onChange={e => setNewJob({ ...newJob, pay_per_day: e.target.value })}
+                                            onChange={e =>
+                                                setNewJob({ ...newJob, pay_per_day: e.target.value })
+                                            }
                                         />
 
                                         <input
-                                            className="input"
+                                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm 
+                       placeholder-gray-400 focus:border-indigo-500 focus:ring-2 
+                       focus:ring-indigo-500/20 outline-none transition"
                                             placeholder="City"
                                             required
                                             value={newJob.location}
-                                            onChange={e => setNewJob({ ...newJob, location: e.target.value })}
+                                            onChange={e =>
+                                                setNewJob({ ...newJob, location: e.target.value })
+                                            }
                                         />
                                     </div>
                                 </section>
@@ -520,7 +580,7 @@ const BusinessDashboard = () => {
                                     type="submit"
                                     className="w-full bg-gray-900 text-white py-4 rounded-2xl font-semibold tracking-wide hover:bg-gray-800 transition"
                                 >
-                                    Publish Job
+                                    {editingJobId ? 'Update Posting' : 'Publish Job'}
                                 </button>
                             </form>
                         </div>
@@ -579,22 +639,72 @@ const BusinessDashboard = () => {
 
                                             </div>
 
-                                            <div className="shrink-0">
+                                            <div className="shrink-0 flex items-center gap-2">
                                                 {job.is_active ? (
-                                                    <button
-                                                        onClick={() => handleStatusChange(job.id, false)}
-                                                        className="px-3 py-1.5 text-xs font-medium rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition"
-                                                    >
-                                                        Deactivate
-                                                    </button>
+                                                    <>
+                                                        <button
+                                                            onClick={() => handleEdit(job)}
+                                                            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition"
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleStatusChange(job.id, false)}
+                                                            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition"
+                                                        >
+                                                            Deactivate
+                                                        </button>
+                                                    </>
                                                 ) : (
-                                                    <button
-                                                        onClick={() => handleRepost(job)}
-                                                        className="px-3 py-1.5 text-xs font-medium rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition"
-                                                    >
-                                                        Repost
-                                                    </button>
+                                                    <>
+                                                        <button
+                                                            onClick={() => handleRepost(job)}
+                                                            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition"
+                                                        >
+                                                            Repost
+                                                        </button>
+                                                    </>
                                                 )}
+                                            </div>
+                                        </div>
+
+                                        {/* Description */}
+                                        <div className="mt-4">
+                                            <p className="text-sm text-gray-600 line-clamp-2">
+                                                {job.description}
+                                            </p>
+                                        </div>
+
+                                        {/* Skills & Schedule */}
+                                        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
+                                            <div>
+                                                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Skills Required</h4>
+                                                <div className="flex flex-wrap gap-1.5">
+                                                    {job.required_skills.map(skill => (
+                                                        <span key={skill} className="px-2 py-0.5 rounded-md bg-white border border-gray-200 text-[10px] font-medium text-gray-600">
+                                                            {skill}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Schedule</h4>
+                                                <div className="space-y-1">
+                                                    <p className="text-[10px] text-gray-600 flex items-center gap-1.5">
+                                                        <span className="w-1 h-1 rounded-full bg-indigo-400" />
+                                                        {job.requirements?.days?.length ? job.requirements.days.join(', ') : 'Flexible Days'}
+                                                    </p>
+                                                    <p className="text-[10px] text-gray-600 flex items-center gap-1.5">
+                                                        <span className="w-1 h-1 rounded-full bg-teal-400" />
+                                                        {job.requirements?.months?.length ? job.requirements.months.join(', ') : 'All Months'}
+                                                    </p>
+                                                    {job.requirements?.time_slots?.map((slot, i) => (
+                                                        <p key={i} className="text-[10px] text-gray-600 flex items-center gap-1.5">
+                                                            <span className="w-1 h-1 rounded-full bg-amber-400" />
+                                                            {slot.start} - {slot.end}
+                                                        </p>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
 
