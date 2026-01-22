@@ -38,7 +38,8 @@ const Chat = () => {
     const fetchConversations = async () => {
         try {
             const { data } = await api.get('conversations/');
-            setConversations(data);
+            const results = data.results || data;
+            setConversations(results);
         } catch (e) {
             console.error("Failed to fetch conversations");
         }
@@ -47,7 +48,8 @@ const Chat = () => {
     const fetchMessages = async (convId) => {
         try {
             const { data } = await api.get(`messages/?conversation=${convId}`);
-            setMessages(data);
+            const results = data.results || data;
+            setMessages(results);
         } catch (e) {
             console.error("Failed to fetch messages");
         }
@@ -70,6 +72,7 @@ const Chat = () => {
     };
 
     const getOtherParticipant = (conv) => {
+        if (!conv || !conv.participants || !user) return "Unknown User";
         return conv.participants.find(p => p !== user.username) || "Unknown User";
     };
 
