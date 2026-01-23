@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
+import SEO from '../components/SEO';
 
 const Profile = () => {
     const { user } = useAuth();
@@ -77,6 +78,10 @@ const Profile = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
+            <SEO
+                title="Profile Settings"
+                description="Update your professional bio, location, and contact details to improve your visibility on SmartJobs."
+            />
             <Navbar />
 
             <main className="pt-24 pb-12 px-4 sm:px-6">

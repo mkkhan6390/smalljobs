@@ -1,9 +1,14 @@
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import SEO from '../components/SEO';
 
 const About = () => {
     return (
         <div className="min-h-screen bg-white">
+            <SEO
+                title="About Us"
+                description="Learn about SmartJobs' mission to simplify local work through precise, time-based matching. Built for workers and businesses."
+            />
             <Navbar />
 
             <header className="pt-32 pb-16 px-4 bg-gray-50/50 border-b border-gray-100 text-center">

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import SEO from '../components/SEO';
 import { MapPin, Mail, ChevronDown } from "lucide-react";
 
 const Contact = () => {
@@ -16,6 +17,10 @@ const Contact = () => {
 
     return (
         <div className="min-h-screen bg-white">
+            <SEO
+                title="Contact Support"
+                description="Need help or have feedback? Reach out to the SmartJobs team. We're here to assist you with your hiring and job-seeking needs."
+            />
             <Navbar />
 
             <header className="pt-32 pb-16 px-4 text-center">

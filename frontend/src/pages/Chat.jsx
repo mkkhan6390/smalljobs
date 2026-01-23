@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import ProfileIcon from '../components/ProfileIcon';
+import SEO from '../components/SEO';
 
 const Chat = () => {
     const { user, logout } = useAuth();
@@ -86,6 +87,10 @@ const Chat = () => {
 
     return (
         <div className="h-screen flex flex-col bg-gray-100">
+            <SEO
+                title="Chat"
+                description="Connect with businesses and job seekers in real-time. Communicate safely and efficiently on SmartJobs."
+            />
             {/* Navbar */}
             <nav className="bg-white shadow-sm p-4 flex justify-between items-center z-10 relative">
                 <h1 className="text-2xl font-bold text-indigo-600 cursor-pointer" onClick={handleDashboardClick}>

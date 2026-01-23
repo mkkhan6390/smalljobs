@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import hero_job_platform from '../assets/smalljobshero.png';
 import { Clock, MapPin, ShieldCheck } from "lucide-react";
 import Footer from '../components/Footer'
+import SEO from '../components/SEO';
 
 const features = [
     {
@@ -28,6 +29,10 @@ const features = [
 const Landing = () => {
     return (
         <div className="min-h-screen bg-white">
+            <SEO
+                title="Home"
+                description="SmartJobs is the premium marketplace for discovering local work and hiring skilled talent with ease. Connect with verified opportunities that fit your schedule."
+            />
             <Navbar />
 
             {/* Hero Section */}

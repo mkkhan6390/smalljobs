@@ -8,6 +8,7 @@ import NotificationBadge from '../components/NotificationBadge';
 import LocationSelector from '../components/LocationSelector';
 import PhoneModal from '../components/PhoneModal';
 import Navbar from '../components/Navbar';
+import SEO from '../components/SEO';
 
 
 
@@ -219,6 +220,10 @@ const SeekerDashboard = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
+            <SEO
+                title="Job Seeker Dashboard"
+                description="Find local work opportunities that match your skills and schedule. Manage your applications and profile with ease."
+            />
             <Navbar />
 
             <main className="flex-1 pt-20 pb-12 px-4 sm:px-6 lg:px-8">

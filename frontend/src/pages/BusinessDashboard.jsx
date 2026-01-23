@@ -4,6 +4,7 @@ import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import AvailabilitySelector from '../components/AvailabilitySelector';
 import ProfileIcon from '../components/ProfileIcon';
+import SEO from '../components/SEO';
 import MessageBadge from '../components/NotificationBadge';
 import LocationSelector from '../components/LocationSelector';
 import PhoneModal from '../components/PhoneModal';
@@ -379,6 +380,10 @@ const BusinessDashboard = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
+            <SEO
+                title="Business Dashboard"
+                description="Post jobs, manage applications, and find the perfect local talent for your business."
+            />
             <Navbar />
 
             <main className="flex-1 pt-20 pb-12 px-4 sm:px-6 lg:px-8 bg-gray-50">

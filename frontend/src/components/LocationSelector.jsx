@@ -71,7 +71,7 @@ const LocationSelector = ({ onLocationChange, initialData, isSeeker }) => {
         setLoading(true);
         try {
             // 1. Get current city
-            const res = await axios.get(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10`);
+            const res = await axios.get(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&accept-language=en`);
             const cityData = res.data.address.city || res.data.address.town || res.data.address.village || res.data.address.county || '';
             setCity(cityData);
 
